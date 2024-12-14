@@ -17,7 +17,7 @@ interface MtgApiRepository {
 
     suspend fun getCardById(id: String): MtgApiResult<CardModel>
 
-    suspend fun getSets(): MtgApiResult<CardSetListModel>
+    suspend fun getSets(queries: HashMap<String, String>): MtgApiResult<CardSetListModel>
 
     suspend fun getSetByCode(code: String): MtgApiResult<CardSetModel>
 

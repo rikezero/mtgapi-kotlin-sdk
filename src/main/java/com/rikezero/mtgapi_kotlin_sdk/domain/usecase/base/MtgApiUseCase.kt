@@ -1,4 +1,4 @@
-package com.rikezero.mtgapi_kotlin_sdk.domain.usecase
+package com.rikezero.mtgapi_kotlin_sdk.domain.usecase.base
 
 import com.rikezero.mtgapi_kotlin_sdk.domain.result.MtgApiResult
 

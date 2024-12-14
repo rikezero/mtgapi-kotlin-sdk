@@ -34,9 +34,9 @@ class MtgApiRepositoryImpl(
         }
     }
 
-    override suspend fun getSets(): MtgApiResult<CardSetListModel> {
+    override suspend fun getSets(queries: HashMap<String, String>): MtgApiResult<CardSetListModel> {
         return result {
-            mtgApiNetworking.getSets()
+            mtgApiNetworking.getSets(queries = queries)
         }.mapToNotNull { sets ->
             sets.toModel()
         }

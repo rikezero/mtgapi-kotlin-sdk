@@ -40,8 +40,9 @@ class MtgApiNetworkingImpl(
         )
     }
 
-    override suspend fun getSets(): MtgApiResponse<CardSetListResponse?> {
+    override suspend fun getSets(queries: HashMap<String, String>): MtgApiResponse<CardSetListResponse?> {
         return networkAdapter.get(
+            queryParams = queries,
             url = SETS_ENDPOINT,
             responseClass = CardSetListResponse::class
         )

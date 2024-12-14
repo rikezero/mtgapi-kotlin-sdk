@@ -3,6 +3,7 @@ package com.rikezero.mtgapi_kotlin_sdk.domain.usecase
 import com.rikezero.mtgapi_kotlin_sdk.domain.model.card.CardModel
 import com.rikezero.mtgapi_kotlin_sdk.domain.repository.MtgApiRepository
 import com.rikezero.mtgapi_kotlin_sdk.domain.result.MtgApiResult
+import com.rikezero.mtgapi_kotlin_sdk.domain.usecase.base.MtgApiUseCase
 
 /**
  * UseCase for searching a specific card.

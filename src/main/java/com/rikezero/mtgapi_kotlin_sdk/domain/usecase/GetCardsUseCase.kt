@@ -4,6 +4,7 @@ import com.rikezero.mtgapi_kotlin_sdk.domain.model.lists.CardListModel
 import com.rikezero.mtgapi_kotlin_sdk.domain.repository.MtgApiRepository
 import com.rikezero.mtgapi_kotlin_sdk.domain.result.MtgApiResult
 import com.rikezero.mtgapi_kotlin_sdk.domain.usecase.GetCardsUseCase.GetCardsParams
+import com.rikezero.mtgapi_kotlin_sdk.domain.usecase.base.MtgApiUseCase
 
 class  GetCardsUseCase(
     private val mtgApiRepository: MtgApiRepository

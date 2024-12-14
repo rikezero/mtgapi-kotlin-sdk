@@ -20,7 +20,7 @@ interface MtgApiNetworking {
     suspend fun getCardById(id: String): MtgApiResponse<CardResponse?>
 
     @Throws(MtgApiError::class)
-    suspend fun getSets(): MtgApiResponse<CardSetListResponse?>
+    suspend fun getSets(queries: HashMap<String, String>): MtgApiResponse<CardSetListResponse?>
 
     @Throws(MtgApiError::class)
     suspend fun getSetByCode(code: String): MtgApiResponse<CardSetResponse?>
