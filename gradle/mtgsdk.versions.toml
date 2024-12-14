@@ -1,0 +1,28 @@
+[versions]
+# Kotlin
+kotlin = "2.0.20"
+coroutines = "1.9.0"
+# Koin
+koin = "3.4.2"
+# Retrofit2
+retrofit2 = "2.11.0"
+okhttp3 = "4.11.0"
+
+[libraries]
+# Kotlin
+kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
+kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
+kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
+# Koin dependencies
+koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
+
+# Retrofit2 dependencies
+retrofit2 = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit2" }
+retrofit2-converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit2" }
+
+# OkHttp3 dependencies
+okhttp3 = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp3" }
+okhttp3-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp3" }
+
+[plugins]
+jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
