@@ -89,11 +89,13 @@ jobs:
   create-release:
     needs: [setup, build]
     runs-on: ubuntu-22.04
-
+  
     steps:
       # Step 1: Create GitHub Release
       - name: Create GitHub Release
         uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: "v${{ needs.setup.outputs.version }}"
           release_name: "Release v${{ needs.setup.outputs.version }}"
@@ -102,5 +104,15 @@ jobs:
             - Published new version: `${{ needs.setup.outputs.version }}`
           draft: false
           prerelease: false
+  
+      # Step 2: Upload .aar or other generated artifacts to the release
+      - name: Upload AAR to GitHub Release
+        uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create-release.outputs.upload_url }}
+          asset_path: path/to/your/file.aar  # Replace with the correct path to your .aar file
+          asset_name: your-sdk-v${{ needs.setup.outputs.version }}.aar  # Name of the .aar file for the release
+          asset_content_type: application/zip  # Use the correct MIME type for your artifact
+
