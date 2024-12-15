@@ -10,20 +10,21 @@ on:
   workflow_dispatch:
 
 jobs:
-  publish:
-    runs-on: ubuntu-22.04 # Explicitly use Ubuntu 22.04 for stability
+  setup:
+    runs-on: ubuntu-22.04
+
+    outputs:
+      version: ${{ steps.set_version.outputs.version }}
 
     steps:
       # Step 1: Check out the repository
       - name: Check out repository
         uses: actions/checkout@v3
 
-      # Step 2: Set up JDK
-      - name: Set up JDK
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17' # Specify Java version
-          distribution: 'temurin' # Use the Temurin distribution
+      # Step 2: Calculate Version
+      - name: Set version using run number
+        id: set_version
+        run: echo "::set-output name=version::1.0.0.${{ github.run_number }}"
 
       # Step 3: Cache Gradle dependencies
       - name: Cache Gradle dependencies
@@ -36,19 +37,68 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      # Step 4: Make gradlew executable
+  build:
+    needs: setup
+    runs-on: ubuntu-22.04
+
+    steps:
+      # Step 1: Check out the repository
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      # Step 2: Set up JDK
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # Step 3: Make gradlew executable
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      # Step 5: Calculate Version
-      - name: Set version using run number
-        id: set_version
-        run: echo "VERSION=1.0.0.${{ github.run_number }}" >> $GITHUB_ENV
-
-      # Step 6: Publish the package to GitHub Packages
+      # Step 4: Publish the package to GitHub Packages
       - name: Publish to GitHub Packages
         env:
           GH_USERNAME: ${{ secrets.GH_USERNAME }}
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-          VERSION: ${{ env.VERSION }}
-        run: ./gradlew publish -Pversion=${{ env.VERSION }}
+        run: ./gradlew publish -Pversion=${{ needs.setup.outputs.version }}
+
+  update-readme:
+    needs: [setup, build]
+    runs-on: ubuntu-22.04
+
+    steps:
+      # Step 1: Check out the repository
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      # Step 2: Update README.md
+      - name: Update README with version
+        run: |
+          sed -i "s/version:.*/version: ${VERSION}/" README.md
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git commit -am "Update README.md with version ${VERSION}"
+          git push
+        env:
+          VERSION: ${{ needs.setup.outputs.version }}
+
+  create-release:
+    needs: [setup, build]
+    runs-on: ubuntu-22.04
+
+    steps:
+      # Step 1: Create GitHub Release
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: "v${{ needs.setup.outputs.version }}"
+          release_name: "Release v${{ needs.setup.outputs.version }}"
+          body: |
+            ### Changelog
+            - Published new version: `${{ needs.setup.outputs.version }}`
+          draft: false
+          prerelease: false
