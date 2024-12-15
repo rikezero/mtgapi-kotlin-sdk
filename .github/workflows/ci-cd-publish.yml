@@ -40,9 +40,15 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      # Step 5: Publish the package to GitHub Packages
+      # Step 5: Calculate Version
+      - name: Set version using run number
+        id: set_version
+        run: echo "VERSION=1.0.0.${{ github.run_number }}" >> $GITHUB_ENV
+
+      # Step 6: Publish the package to GitHub Packages
       - name: Publish to GitHub Packages
         env:
           GH_USERNAME: ${{ secrets.GH_USERNAME }}
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-        run: ./gradlew publish
+          VERSION: ${{ env.VERSION }}
+        run: ./gradlew publish -Pversion=${{ env.VERSION }}
