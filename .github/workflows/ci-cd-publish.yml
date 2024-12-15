@@ -76,10 +76,11 @@ jobs:
       # Step 2: Update README.md
       - name: Update README with version
         run: |
-          sed -i "s/version:.*/version: ${VERSION}/" README.md
+          sed -i "s/Current SDK version: .*/Current SDK version: v${{ needs.setup.outputs.version }}/" README.md
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
-          git commit -am "Update README.md with version ${VERSION}"
+          git add README.md
+          git commit -m "Update README.md with version v${{ needs.setup.outputs.version }}"
           git push
         env:
           VERSION: ${{ needs.setup.outputs.version }}
@@ -92,8 +93,6 @@ jobs:
       # Step 1: Create GitHub Release
       - name: Create GitHub Release
         uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: "v${{ needs.setup.outputs.version }}"
           release_name: "Release v${{ needs.setup.outputs.version }}"
@@ -102,3 +101,5 @@ jobs:
             - Published new version: `${{ needs.setup.outputs.version }}`
           draft: false
           prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
