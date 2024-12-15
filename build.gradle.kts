@@ -17,6 +17,21 @@ kotlin {
     }
 }
 
+// Load version from version.properties
+val versionFile = file("version.properties")
+val versionProps = Properties()
+if (versionFile.exists()) {
+    versionProps.load(versionFile.inputStream())
+}
+
+// Extract the base version (MAJOR.MINOR.PATCH)
+val baseVersion = versionProps.getProperty("version", "1.0.0") // Default to 1.0.0
+val runNumber = System.getenv("GITHUB_RUN_NUMBER") ?: "0" // Default to 0 if not in CI
+
+// Set the full version using GITHUB_RUN_NUMBER as the BUILD number
+val fullVersion = "$baseVersion.$runNumber"
+version = fullVersion
+
 dependencies {
     // Kotlin
     implementation(mtgsdk.kotlinx.coroutines.core)
@@ -67,7 +82,7 @@ sourceSets {
 
 // Metadata for the library
 group = "com.github.rikezero" // GitHub-based group ID
-version = "1.0.0" // Semantic version of the library
+version = version // Dynamically set version
 
 publishing {
     publications {
@@ -77,11 +92,11 @@ publishing {
             // Metadata for the publication
             groupId = "com.github.rikezero"
             artifactId = "mtgapi-kotlin-sdk"
-            version = "1.0.0"
+            version = version // Dynamic version
 
             pom {
                 name.set("MTG API Kotlin SDK")
-                description.set("Unofficial kotlin sdk for magicthegathering.io API")
+                description.set("Unofficial Kotlin SDK for MagicTheGathering.io API")
                 url.set("https://github.com/rikezero/mtgapi-kotlin-sdk")
                 licenses {
                     license {
@@ -105,19 +120,23 @@ publishing {
         }
     }
 
-    val envProps = Properties()
-    file("environment.properties").takeIf { it.exists() }?.apply {
-        inputStream().use { envProps.load(it) }
-    }
-
     repositories {
+        // Define where to publish the library
         maven {
             name = "GitHubPackages"
             url = uri("https://maven.pkg.github.com/rikezero/mtgapi-kotlin-sdk")
             credentials {
-                username = envProps.getProperty("GH_USERNAME") ?: System.getenv("GH_USERNAME")
-                password = envProps.getProperty("GH_TOKEN") ?: System.getenv("GH_TOKEN")
+                username = System.getenv("GH_USERNAME") // GitHub username
+                password = System.getenv("GH_TOKEN") // GitHub personal access token
             }
         }
+    }
+}
+
+// Task to update the version.properties file after a successful build
+tasks.register("updateVersionFile") {
+    doLast {
+        versionProps.setProperty("version", baseVersion) // Keep MAJOR.MINOR.PATCH
+        versionProps.store(versionFile.outputStream(), "Version updated after build")
     }
 }
