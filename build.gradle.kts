@@ -105,14 +105,18 @@ publishing {
         }
     }
 
+    val envProps = Properties()
+    file("environment.properties").takeIf { it.exists() }?.apply {
+        inputStream().use { envProps.load(it) }
+    }
+
     repositories {
-        // Define where to publish the library
         maven {
             name = "GitHubPackages"
             url = uri("https://maven.pkg.github.com/rikezero/mtgapi-kotlin-sdk")
             credentials {
-                username = System.getenv("GITHUB_USERNAME") // GitHub username
-                password = System.getenv("GITHUB_TOKEN") // GitHub personal access token
+                username = envProps.getProperty("GH_USERNAME") ?: System.getenv("GH_USERNAME")
+                password = envProps.getProperty("GH_TOKEN") ?: System.getenv("GH_TOKEN")
             }
         }
     }
