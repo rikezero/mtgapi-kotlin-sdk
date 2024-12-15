@@ -7,20 +7,25 @@ on:
   pull_request:
     branches:
       - master
-  workflow_dispatch: # Enables manual trigger
+  workflow_dispatch:
 
 jobs:
   publish:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04 # Explicitly use Ubuntu 22.04 for stability
+
     steps:
+      # Step 1: Check out the repository
       - name: Check out repository
         uses: actions/checkout@v3
 
+      # Step 2: Set up JDK
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
-          java-version: '17'
+          java-version: '17' # Specify Java version
+          distribution: 'temurin' # Use the Temurin distribution
 
+      # Step 3: Cache Gradle dependencies
       - name: Cache Gradle dependencies
         uses: actions/cache@v3
         with:
@@ -31,6 +36,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
+      # Step 4: Publish the package to GitHub Packages
       - name: Publish to GitHub Packages
         env:
           GH_USERNAME: ${{ secrets.GH_USERNAME }}
