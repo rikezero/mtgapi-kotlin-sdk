@@ -41,9 +41,6 @@ jobs:
     needs: setup
     runs-on: ubuntu-22.04
 
-    outputs:
-      jar_path: ${{ steps.save_jar.outputs.jar_path }}
-
     steps:
       # Step 1: Check out the repository
       - name: Check out repository
@@ -67,22 +64,12 @@ jobs:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: ./gradlew publish -Pversion=${{ needs.setup.outputs.version }}
 
-      # Step 5: Debug build directory (List all files in build/libs to confirm .jar file)
-      - name: Debug build directory
-        run: ls -al build/libs
-
-      # Step 6: Save .jar file for Release
-      - name: Save .jar file for Release
-        id: save_jar
-        run: |
-          JAR_FILE=$(find build/libs -name "MtgApi-kotlin-sdk-${{ needs.setup.outputs.version }}.jar")
-          if [ -z "$JAR_FILE" ]; then
-            echo "Error: No .jar file found for version ${{ needs.setup.outputs.version }}!"
-            exit 1
-          fi
-          mkdir -p artifact
-          cp "$JAR_FILE" artifact/
-          echo "::set-output name=jar_path::$JAR_FILE"
+      # Step 5: Upload .jar file as an artifact
+      - name: Upload .jar as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: jar-file
+          path: build/libs/MtgApi-kotlin-sdk-${{ needs.setup.outputs.version }}.jar
 
   create-and-upload-release:
     needs: [setup, build]
@@ -93,21 +80,26 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      # Step 2: Create GitHub Release and Upload Asset
+      # Step 2: Download the .jar artifact
+      - name: Download .jar artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: jar-file
+
+      # Step 3: Create GitHub Release and Upload Asset
       - name: Create Release and Upload Asset
         uses: softprops/action-gh-release@v1
         with:
           tag_name: "v${{ needs.setup.outputs.version }}"
-          release_name: "Release v${{ needs.setup.outputs.version }}"
+          name: "Release v${{ needs.setup.outputs.version }}"
           body: |
             ### Changelog
             - Published new version: `${{ needs.setup.outputs.version }}`
           draft: false
           prerelease: false
-          files: build/libs/MtgApi-kotlin-sdk-${{ needs.setup.outputs.version }}.jar
+          files: artifact/MtgApi-kotlin-sdk-${{ needs.setup.outputs.version }}.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
 
   update-readme:
     needs: [ setup, build ]
