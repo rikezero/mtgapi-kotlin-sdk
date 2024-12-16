@@ -45,7 +45,7 @@ jobs:
       jar_path: ${{ steps.save_jar.outputs.jar_path }}
 
     steps:
-      # Step 1: Check out the repository (using the latest version v4)
+      # Step 1: Check out the repository
       - name: Check out repository
         uses: actions/checkout@v4
 
@@ -88,8 +88,11 @@ jobs:
     needs: [ setup, build ]
     runs-on: ubuntu-22.04
 
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}  # Capture the upload_url
+
     steps:
-      # Step 1: Check out the repository (Ensure it’s checked out before accessing files)
+      # Step 1: Check out the repository
       - name: Check out repository
         uses: actions/checkout@v4
 
@@ -110,18 +113,15 @@ jobs:
 
       # Step 3: Upload .jar file to GitHub Release
       - name: Upload .jar file to GitHub Release
-        uses: actions/upload-release-asset@v1
+        uses: softprops/action-gh-release@v1
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}  # Use the upload_url captured from the create-release step
+          files: build/libs/MtgApi-kotlin-sdk-${{ needs.setup.outputs.version }}.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ needs.build.outputs.jar_path }}
-          asset_name: mtgapi-kotlin-sdk-v${{ needs.setup.outputs.version }}.jar
-          asset_content_type: application/java-archive
-
 
   update-readme:
-    needs: [setup, build]
+    needs: [ setup, build ]
     runs-on: ubuntu-22.04
 
     steps:
