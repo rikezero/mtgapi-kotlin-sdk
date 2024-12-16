@@ -57,12 +57,19 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      # Step 4: Publish the package to GitHub Packages
-      - name: Publish to GitHub Packages
+      # Step 4: Build and publish the library to GitHub Packages
+      - name: Build and Publish to GitHub Packages
         env:
           GH_USERNAME: ${{ secrets.GH_USERNAME }}
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: ./gradlew publish -Pversion=${{ needs.setup.outputs.version }}
+
+      # Step 5: Save .jar file for release
+      - name: Save .jar file for Release
+        run: |
+          mkdir -p artifact
+          cp build/libs/*.jar artifact/
+        id: save_jar
 
   update-readme:
     needs: [setup, build]
@@ -105,13 +112,13 @@ jobs:
           draft: false
           prerelease: false
   
-      # Step 2: Upload AAR to GitHub Release
-      - name: Upload AAR to GitHub Release
+      # Step 2: Upload .jar file to GitHub Release
+      - name: Upload .jar file to GitHub Release
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}  # This gets the upload URL from the previous step
-          asset_path: path/to/your/file.aar  # Replace with the actual path to your .aar file
-          asset_name: your-sdk-v${{ needs.setup.outputs.version }}.aar  # Dynamic name based on the version
-          asset_content_type: application/zip  # MIME type for the AAR file
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: artifact/*.jar  # Use the .jar file saved earlier
+          asset_name: mtgapi-kotlin-sdk-v${{ needs.setup.outputs.version }}.jar  # Dynamic name based on the version
+          asset_content_type: application/java-archive  # Correct MIME type for .jar files
