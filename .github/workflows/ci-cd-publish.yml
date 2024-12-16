@@ -80,13 +80,18 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      # Step 2: Download the .jar artifact
+      # Step 2: Download the .jar artifact to a specific location
       - name: Download .jar artifact
         uses: actions/download-artifact@v3
         with:
           name: jar-file
+          path: ./artifact/
 
-      # Step 3: Create GitHub Release and Upload Asset
+      # Step 3: Debug downloaded files
+      - name: Debug downloaded files
+        run: ls -al ./artifact/
+
+      # Step 4: Create GitHub Release and Upload Asset
       - name: Create Release and Upload Asset
         uses: softprops/action-gh-release@v1
         with:
@@ -97,12 +102,12 @@ jobs:
             - Published new version: `${{ needs.setup.outputs.version }}`
           draft: false
           prerelease: false
-          files: artifact/MtgApi-kotlin-sdk-${{ needs.setup.outputs.version }}.jar
+          files: ./artifact/MtgApi-kotlin-sdk-${{ needs.setup.outputs.version }}.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   update-readme:
-    needs: [ setup, build ]
+    needs: [setup, build]
     runs-on: ubuntu-22.04
 
     steps:
