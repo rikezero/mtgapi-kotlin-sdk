@@ -40,99 +40,92 @@ jobs:
   build:
     needs: setup
     runs-on: ubuntu-22.04
-  
+
     outputs:
       jar_path: ${{ steps.save_jar.outputs.jar_path }}
-  
+
     steps:
       # Step 1: Check out the repository
       - name: Check out repository
         uses: actions/checkout@v3
-  
+
       # Step 2: Set up JDK
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
-  
+
       # Step 3: Make gradlew executable
       - name: Make gradlew executable
         run: chmod +x ./gradlew
-  
+
       # Step 4: Build and publish the library to GitHub Packages
       - name: Build and Publish to GitHub Packages
         env:
           GH_USERNAME: ${{ secrets.GH_USERNAME }}
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: ./gradlew publish -Pversion=${{ needs.setup.outputs.version }}
-  
+
       # Step 5: Save .jar file for Release
       - name: Save .jar file for Release
         id: save_jar
         run: |
-          JAR_FILE=$(find build/libs -name '*.jar' | head -n 1)
-          if [ -z "$JAR_FILE" ]; then
-            echo "Error: No .jar file found in build/libs/"
+          JAR_FILE="build/libs/MtgApi-kotlin-sdk-${{ needs.setup.outputs.version }}.jar"
+          if [ ! -f "$JAR_FILE" ]; then
+            echo "Error: $JAR_FILE not found!"
             exit 1
           fi
           mkdir -p artifact
           cp "$JAR_FILE" artifact/
-          echo "::set-output name=jar_path::$JAR_FILE" 
+          echo "::set-output name=jar_path::$JAR_FILE"
 
-      - name: Debug build directory
-        run: ls -al build/libs
+  create-release:
+    needs: [setup, build]
+    runs-on: ubuntu-22.04
 
+    steps:
+      # Step 1: Create GitHub Release
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: "v${{ needs.setup.outputs.version }}"
+          release_name: "Release v${{ needs.setup.outputs.version }}"
+          body: |
+            ### Changelog
+            - Published new version: `${{ needs.setup.outputs.version }}`
+          draft: false
+          prerelease: false
 
-  # create-release:
-  #   needs: [setup, build]
-  #   runs-on: ubuntu-22.04
-  
-  #   steps:
-  #     # Step 1: Create GitHub Release
-  #     - name: Create GitHub Release
-  #       id: create_release
-  #       uses: actions/create-release@v1
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #       with:
-  #         tag_name: "v${{ needs.setup.outputs.version }}"
-  #         release_name: "Release v${{ needs.setup.outputs.version }}"
-  #         body: |
-  #           ### Changelog
-  #           - Published new version: `${{ needs.setup.outputs.version }}`
-  #         draft: false
-  #         prerelease: false
-  
-  #     # Step 2: Upload .jar file to GitHub Release
-  #     - name: Upload .jar file to GitHub Release
-  #       uses: actions/upload-release-asset@v1
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #       with:
-  #         upload_url: ${{ steps.create_release.outputs.upload_url }}
-  #         asset_path: ${{ needs.build.outputs.jar_path }}
-  #         asset_name: mtgapi-kotlin-sdk-v${{ needs.setup.outputs.version }}.jar
-  #         asset_content_type: application/java-archive
+      # Step 2: Upload .jar file to GitHub Release
+      - name: Upload .jar file to GitHub Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ needs.build.outputs.jar_path }}
+          asset_name: mtgapi-kotlin-sdk-v${{ needs.setup.outputs.version }}.jar
+          asset_content_type: application/java-archive
 
+  update-readme:
+    needs: [setup, build]
+    runs-on: ubuntu-22.04
 
-  # update-readme:
-  #     needs: [setup, build]
-  #     runs-on: ubuntu-22.04
-  
-  #     steps:
-  #       # Step 1: Check out the repository
-  #       - name: Check out repository
-  #         uses: actions/checkout@v3
-    
-  #       # Step 2: Update README.md
-  #       - name: Update README with version
-  #         run: |
-  #           sed -i "s/Current SDK version: .*/Current SDK version: v${{ needs.setup.outputs.version }}/" README.md
-  #           git config --global user.name "GitHub Actions"
-  #           git config --global user.email "actions@github.com"
-  #           git add README.md
-  #           git commit -m "Update README.md with version v${{ needs.setup.outputs.version }}"
-  #           git push https://${{ secrets.GH_REPO_TOKEN }}@github.com/${{ github.repository }} HEAD:master
-  #         env:
-  #           VERSION: ${{ needs.setup.outputs.version }}
+    steps:
+      # Step 1: Check out the repository
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      # Step 2: Update README.md
+      - name: Update README with version
+        run: |
+          sed -i "s/Current SDK version: .*/Current SDK version: v${{ needs.setup.outputs.version }}/" README.md
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add README.md
+          git commit -m "Update README.md with version v${{ needs.setup.outputs.version }}"
+          git push https://${{ secrets.GH_REPO_TOKEN }}@github.com/${{ github.repository }} HEAD:master
