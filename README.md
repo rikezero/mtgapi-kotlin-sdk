@@ -19,11 +19,14 @@ Feel free to use or fork it as per your needs!
 **WIP** - Ongoing updates to complete development and polish features.
 
 ## Version
-Current SDK version: v1.0.0.25
+Current SDK version: **v1.0.0.25**
+
+---
 
 ## Installation
 
-There are two methods you can choose from to install the MTG API Kotlin SDK into your project: via GitHub Packages (recommended) or by manually downloading the `.jar` file.
+There are two methods you can choose from to install the MTG API Kotlin SDK into your project: via 
+GitHub Packages (recommended) or by manually downloading the `.jar` file.
 
 ### Option 1: GitHub Packages (Recommended)
 
@@ -53,9 +56,11 @@ You can use GitHub Packages to easily install the SDK into your project using Gr
 
    Make sure to replace `v1.0.0.25` with the appropriate version number as needed.
 
-3. To authenticate to GitHub Packages, create a personal access token on GitHub with the appropriate permissions and set the `gpr.user` and `gpr.token` properties in your project (or environment variables).
+3. To authenticate to GitHub Packages, create a personal access token on GitHub with the appropriate permissions 
+4. and set the `gpr.user` and `gpr.token` properties in your project (or environment variables).
 
-For more information about working with GitHub Packages, check out the official [GitHub Packages documentation](https://docs.github.com/pt/packages/working-with-a-github-packages-registry/working-with-the-gradle-registry).
+For more information about working with GitHub Packages, check out the 
+official [GitHub Packages documentation](https://docs.github.com/pt/packages/working-with-a-github-packages-registry/working-with-the-gradle-registry).
 
 ### Option 2: Manual Installation
 
@@ -73,3 +78,45 @@ If you prefer not to use GitHub Packages, you can manually download the `.jar` f
     ```
 
 Make sure to replace `mtgapi-kotlin-sdk-v1.0.0.25.jar` with the actual filename of the `.jar` file you downloaded.
+
+## Initializing the Library in Koin
+
+Once you have successfully installed the library, you can initialize it in your Koin setup.
+
+1. **In your Application class (for Android)**:
+
+    ```kotlin
+    class MyApplication : Application() {
+        override fun onCreate() {
+            super.onCreate()
+
+            // Initialize Koin when the app starts
+            startKoin {
+                androidContext(this@MyApplication)
+                modules(initialModules)  // This could be your global/default modules
+            }
+
+            // Load the MTG API library modules after Koin is initialized
+            startMtgApiLibrary()  // Ensure to call this after Koin initialization
+        }
+    }
+    ```
+
+2. **In a Pure Kotlin Project (non-Android)**:
+
+    ```kotlin
+    import org.koin.core.context.startKoin
+
+    fun main() {
+        // Initialize Koin with global/default modules
+        startKoin {
+            modules(initialModules)  // Define the modules you want to use globally
+        }
+
+        // Dynamically load the MTG API library modules
+        startMtgApiLibrary()  // Ensure to call this after Koin initialization
+    }
+    ```
+
+In both cases, ensure that `startMtgApiLibrary()` is called **after** initializing Koin (`startKoin()`), 
+but **before** using any services or features provided by the MTG API library.
