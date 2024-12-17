@@ -21,8 +21,6 @@ Feel free to use or fork it as per your needs!
 ## Version
 Current SDK version: **v1.0.0.25**
 
----
-
 ## Installation
 
 There are two methods you can choose from to install the MTG API Kotlin SDK into your project: via 
