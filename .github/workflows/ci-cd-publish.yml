@@ -61,6 +61,10 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
+      # Step 4: Build the project
+      - name: Build project
+        run: ./gradlew build
+
       # Step 5: Upload .jar file as an artifact
       - name: Upload .jar as artifact
         uses: actions/upload-artifact@v3
