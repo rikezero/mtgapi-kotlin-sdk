@@ -63,77 +63,12 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      # Step 4: Build the project
-      - name: Build project
-        run: ./gradlew build
-
-      # Step 5: Upload .jar file as an artifact
-      - name: Upload .jar as artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: jar-file
-          path: build/libs/MtgApi-kotlin-sdk-${{ needs.setup.outputs.version }}.jar
-
-  publish-github:
-    needs: build
-    runs-on: ubuntu-22.04
-
-    steps:
-      # Step 1: Check out the repository
-      - name: Check out repository
-        uses: actions/checkout@v4
-
-      # Step 2: Download the .jar artifact
-      - name: Download .jar artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: jar-file
-          path: ./artifact/
-
-      # Step 3: Set up JDK
-      - name: Set up JDK
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      # Step 4: Make gradlew executable
-      - name: Make gradlew executable
-        run: chmod +x ./gradlew
-
-      # Step 5: Publish to GitHub Packages
-      - name: Publish to GitHub Packages
+      # Step 4: Build and Publish to GitHub Packages
+      - name: Build and Publish to GitHub Packages
         env:
           GH_USERNAME: ${{ secrets.GH_USERNAME }}
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: ./gradlew publish -Pversion=${{ needs.setup.outputs.version }}
-
-  publish-maven:
-    needs: build
-    runs-on: ubuntu-22.04
-
-    steps:
-      # Step 1: Check out the repository
-      - name: Check out repository
-        uses: actions/checkout@v4
-
-      # Step 2: Download the .jar artifact
-      - name: Download .jar artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: jar-file
-          path: ./artifact/
-
-      # Step 3: Set up JDK
-      - name: Set up JDK
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      # Step 4: Make gradlew executable
-      - name: Make gradlew executable
-        run: chmod +x ./gradlew
 
       # Step 5: Publish to Maven Central
       - name: Publish to Maven Central
@@ -144,6 +79,13 @@ jobs:
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
         run: ./gradlew publishToMavenCentral -Pversion=${{ needs.setup.outputs.version }}
+
+      # Step 6: Upload .jar file as an artifact
+      - name: Upload .jar as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: jar-file
+          path: build/libs/MtgApi-kotlin-sdk-${{ needs.setup.outputs.version }}.jar
 
   create-and-upload-release:
     needs: [setup, build]
