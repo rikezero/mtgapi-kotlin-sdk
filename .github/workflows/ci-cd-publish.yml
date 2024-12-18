@@ -66,6 +66,9 @@ jobs:
       # Step 4: Build and Publish to GitHub Packages
       - name: Build and Publish to GitHub Packages
         env:
+          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+          GPG_SECRET_KEY: ${{ secrets.GPG_SECRET_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           GH_USERNAME: ${{ secrets.GH_USERNAME }}
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: ./gradlew publish -Pversion=${{ needs.setup.outputs.version }}
