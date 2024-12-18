@@ -8,20 +8,16 @@ on:
     branches:
       - master
   workflow_dispatch:
-    inputs:
-      trigger_publish:
-        description: 'Trigger publish'
-        required: true
-        default: 'yes'
+
 
 jobs:
   setup:
     runs-on: ubuntu-22.04
 
     if: |
+      github.event_name == 'workflow_dispatch' ||
       contains(github.event.head_commit.message, '#publish') || 
-      (github.event_name == 'pull_request' && contains(github.event.pull_request.title, '#publish')) || 
-      ${{ github.event.inputs.trigger_publish == 'yes' }} 
+      (github.event_name == 'pull_request' && contains(github.event.pull_request.title, '#publish'))
 
     outputs:
       version: ${{ steps.set_version.outputs.version }}
