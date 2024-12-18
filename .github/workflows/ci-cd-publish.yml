@@ -48,10 +48,6 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      # Step 5: Make gradlew executable
-      - name: Make gradlew executable
-        run: chmod +x ./gradlew
-
   build:
     needs: setup
     runs-on: ubuntu-22.04
@@ -64,11 +60,15 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      # Step 2: Build the project
+      # Step 2: Make gradlew executable
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      # Step 3: Build the project
       - name: Build project
         run: ./gradlew build
 
-      # Step 3: Upload .jar file as an artifact
+      # Step 4: Upload .jar file as an artifact
       - name: Upload .jar as artifact
         uses: actions/upload-artifact@v3
         with:
