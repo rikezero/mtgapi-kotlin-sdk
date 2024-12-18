@@ -19,7 +19,7 @@ Feel free to use or fork it as per your needs!
 **WIP** - Ongoing updates to complete development and polish features.
 
 ## Version
-Current SDK version: v1.0.0.38
+Current SDK version: v1.0.0.40
 
 ## Installation
 
