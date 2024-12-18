@@ -61,12 +61,9 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      # Step 4: Build and Publish to GitHub Packages
-      - name: Build and Publish to GitHub Packages
-        env:
-          GH_USERNAME: ${{ secrets.GH_USERNAME }}
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
-        run: ./gradlew publish -Pversion=${{ needs.setup.outputs.version }}
+      # Step 4: Build the project
+      - name: Build project
+        run: ./gradlew build
 
       # Step 5: Upload .jar file as an artifact
       - name: Upload .jar as artifact
@@ -74,6 +71,55 @@ jobs:
         with:
           name: jar-file
           path: build/libs/MtgApi-kotlin-sdk-${{ needs.setup.outputs.version }}.jar
+
+  publish-github:
+    needs: build
+    runs-on: ubuntu-22.04
+
+    steps:
+      # Step 1: Check out the repository
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      # Step 2: Set up JDK
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # Step 3: Build and Publish to GitHub Packages
+      - name: Build and Publish to GitHub Packages
+        env:
+          GH_USERNAME: ${{ secrets.GH_USERNAME }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: ./gradlew publish -Pversion=${{ needs.setup.outputs.version }}
+
+  publish-maven:
+    needs: build
+    runs-on: ubuntu-22.04
+
+    steps:
+      # Step 1: Check out the repository
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      # Step 2: Set up JDK
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # Step 3: Build and Publish to Maven Central
+      - name: Build and Publish to Maven Central
+        env:
+          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+          GPG_SECRET_KEY: ${{ secrets.GPG_SECRET_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+        run: ./gradlew publishToMavenCentral -Pversion=${{ needs.setup.outputs.version }}
 
   create-and-upload-release:
     needs: [setup, build]
