@@ -58,6 +58,12 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+          cache: 'maven'
+          server-id: ossrh
+          server-username: ${{ secrets.OSSRH_USERNAME }}
+          server-password: ${{ secrets.OSSRH_PASSWORD }}
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}} 
+          gpg-passphrase: ${{ secrets.GPG_PASSWORD }}
 
       # Step 3: Make gradlew executable
       - name: Make gradlew executable
@@ -66,9 +72,6 @@ jobs:
       # Step 4: Build and Publish to GitHub Packages
       - name: Build and Publish to GitHub Packages
         env:
-          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
-          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-          GPG_PASSWORD: ${{ secrets.GPG_PASSWORD }}
           GH_USERNAME: ${{ secrets.GH_USERNAME }}
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: ./gradlew publishMavenJavaPublicationToGitHubPackagesRepository -Pversion=${{ needs.setup.outputs.version }} -PpublishToMavenCentral=false
