@@ -87,6 +87,18 @@ sourceSets {
 group = "com.github.rikezero" // GitHub-based group ID
 version = version // Dynamically set version
 
+val publishToMavenCentral = project.findProperty("publishToMavenCentral")?.toString()?.toBoolean() ?: false
+
+signing {
+    useInMemoryPgpKeys(
+        System.getenv("GPG_KEY_ID"),
+        System.getenv("GPG_PRIVATE_KEY"),
+        System.getenv("GPG_PASSWORD")
+    )
+    if (project.hasProperty("publishToMavenCentral") && publishToMavenCentral) {
+        sign(publishing.publications["mavenJava"])
+    }
+}
 
 publishing {
     publications {
@@ -124,40 +136,31 @@ publishing {
         }
     }
 
-    signing {
-        useInMemoryPgpKeys(
-            System.getenv("GPG_KEY_ID"),
-            System.getenv("GPG_PRIVATE_KEY"),
-            System.getenv("GPG_PASSWORD")
-        )
-        if (project.hasProperty("publishToMavenCentral") && project.property("publishToMavenCentral") == "true") {
-            sign(publishing.publications["mavenJava"])
-        }
-    }
-
     repositories {
-        // Github Packages
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/rikezero/mtgapi-kotlin-sdk")
-            credentials {
-                username = System.getenv("GH_USERNAME") // GitHub username
-                password = System.getenv("GH_TOKEN") // GitHub personal access token
+        if (publishToMavenCentral){
+            // Maven Central
+            maven {
+                name = "MavenCentral"
+                url = uri(
+                    if (version.toString().endsWith("SNAPSHOT"))
+                        "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+                    else
+                        "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+                )
+                credentials {
+                    username = System.getenv("OSSRH_USERNAME") // Sonatype username
+                    password = System.getenv("OSSRH_PASSWORD") // Sonatype password
+                }
             }
-        }
-
-        // Maven Central
-        maven {
-            name = "MavenCentral"
-            url = uri(
-                if (version.toString().endsWith("SNAPSHOT"))
-                    "https://s01.oss.sonatype.org/content/repositories/snapshots/"
-                else
-                    "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-            )
-            credentials {
-                username = System.getenv("OSSRH_USERNAME") // Sonatype username
-                password = System.getenv("OSSRH_PASSWORD") // Sonatype password
+        } else {
+            // Github Packages
+            maven {
+                name = "GitHubPackages"
+                url = uri("https://maven.pkg.github.com/rikezero/mtgapi-kotlin-sdk")
+                credentials {
+                    username = System.getenv("GH_USERNAME") // GitHub username
+                    password = System.getenv("GH_TOKEN") // GitHub personal access token
+                }
             }
         }
     }
