@@ -41,36 +41,39 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-  build:
-    needs: setup
-    runs-on: ubuntu-22.04
-
-    steps:
-      # Step 1: Check out the repository
-      - name: Check out repository
-        uses: actions/checkout@v4
-
-      # Step 2: Set up JDK
+      # Step 4: Set up JDK
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
 
-      # Step 3: Make gradlew executable
+      # Step 5: Make gradlew executable
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      # Step 4: Build the project
+  build:
+    needs: setup
+    runs-on: ubuntu-22.04
+
+    outputs:
+      jar_path: build/libs/MtgApi-kotlin-sdk-${{ needs.setup.outputs.version }}.jar
+
+    steps:
+      # Step 1: Check out the repository
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      # Step 2: Build the project
       - name: Build project
         run: ./gradlew build
 
-      # Step 5: Upload .jar file as an artifact
+      # Step 3: Upload .jar file as an artifact
       - name: Upload .jar as artifact
         uses: actions/upload-artifact@v3
         with:
           name: jar-file
-          path: build/libs/MtgApi-kotlin-sdk-${{ needs.setup.outputs.version }}.jar
+          path: ${{ steps.build.outputs.jar_path }}
 
   publish-github:
     needs: build
@@ -81,15 +84,15 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      # Step 2: Set up JDK
-      - name: Set up JDK
-        uses: actions/setup-java@v3
+      # Step 2: Download the .jar artifact
+      - name: Download .jar artifact
+        uses: actions/download-artifact@v3
         with:
-          java-version: '17'
-          distribution: 'temurin'
+          name: jar-file
+          path: ./artifact/
 
-      # Step 3: Build and Publish to GitHub Packages
-      - name: Build and Publish to GitHub Packages
+      # Step 3: Publish to GitHub Packages
+      - name: Publish to GitHub Packages
         env:
           GH_USERNAME: ${{ secrets.GH_USERNAME }}
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
@@ -104,15 +107,15 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      # Step 2: Set up JDK
-      - name: Set up JDK
-        uses: actions/setup-java@v3
+      # Step 2: Download the .jar artifact
+      - name: Download .jar artifact
+        uses: actions/download-artifact@v3
         with:
-          java-version: '17'
-          distribution: 'temurin'
+          name: jar-file
+          path: ./artifact/
 
-      # Step 3: Build and Publish to Maven Central
-      - name: Build and Publish to Maven Central
+      # Step 3: Publish to Maven Central
+      - name: Publish to Maven Central
         env:
           GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
           GPG_SECRET_KEY: ${{ secrets.GPG_SECRET_KEY }}
@@ -130,19 +133,15 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      # Step 2: Download the .jar artifact to a specific location
+      # Step 2: Download the .jar artifact
       - name: Download .jar artifact
         uses: actions/download-artifact@v3
         with:
           name: jar-file
           path: ./artifact/
 
-      # Step 3: Debug downloaded files
-      - name: Debug downloaded files
-        run: ls -al ./artifact/
-
-      # Step 4: Create GitHub Release and Upload Asset
-      - name: Create Release and Upload Asset
+      # Step 3: Create GitHub Release and Upload Asset
+      - name: Create GitHub Release and Upload Asset
         uses: softprops/action-gh-release@v1
         with:
           tag_name: "v${{ needs.setup.outputs.version }}"
@@ -172,5 +171,5 @@ jobs:
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           git add README.md
-          git commit -m "Update README.md with version v${{ needs.setup.outputs.version }}"
+          git commit -m "Update README.md with version v${{ needs.setup.outputs.version }}."
           git push https://${{ secrets.GH_REPO_TOKEN }}@github.com/${{ github.repository }} HEAD:master
