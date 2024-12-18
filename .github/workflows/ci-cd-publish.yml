@@ -58,22 +58,26 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: 'gradle'
-          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}} 
-          gpg-passphrase: ${{ secrets.GPG_PASSWORD }}
 
       # Step 3: Make gradlew executable
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      # Step 4: Build and Publish to GitHub Packages
+      # Step 4: Make gradlew executable
+      - name: Import GPG private key
+        uses: crazy-max/ghaction-import-gpg@v2
+        with:
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase: ${{ secrets.GPG_PASSWORD }}
+
+      # Step 5: Build and Publish to GitHub Packages
       - name: Build and Publish to GitHub Packages
         env:
           GH_USERNAME: ${{ secrets.GH_USERNAME }}
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: ./gradlew publishMavenJavaPublicationToGitHubPackagesRepository -Pversion=${{ needs.setup.outputs.version }} -PpublishToMavenCentral=false
 
-      # Step 5: Publish to Maven Central
+      # Step 6: Publish to Maven Central
       - name: Publish to Maven Central
         env:
           GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
@@ -83,7 +87,7 @@ jobs:
           OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
         run: ./gradlew publishMavenJavaPublicationToMavenCentralRepository -Pversion=${{ needs.setup.outputs.version }} -PpublishToMavenCentral=true
 
-      # Step 6: Upload .jar file as an artifact
+      # Step 7: Upload .jar file as an artifact
       - name: Upload .jar as artifact
         uses: actions/upload-artifact@v3
         with:
