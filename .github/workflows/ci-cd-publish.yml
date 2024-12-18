@@ -58,10 +58,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: 'maven'
-          server-id: ossrh
-          server-username: ${{ secrets.OSSRH_USERNAME }}
-          server-password: ${{ secrets.OSSRH_PASSWORD }}
+          cache: 'gradle'
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}} 
           gpg-passphrase: ${{ secrets.GPG_PASSWORD }}
 

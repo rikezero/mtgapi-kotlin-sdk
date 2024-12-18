@@ -127,9 +127,9 @@ publishing {
 
     signing {
         useInMemoryPgpKeys(
-            System.getenv("GPG_KEY_ID"),
-            System.getenv("GPG_PRIVATE_KEY"),
-            System.getenv("GPG_PASSWORD")
+            /* defaultKeyId = */ System.getenv("GPG_KEY_IDD"),
+            /* defaultSecretKey = */ System.getenv("GPG_PRIVATE_KEY"),
+            /* defaultPassword = */ System.getenv("GPG_PASSWORD")
         )
         if (publishToMavenCentral) {
             sign(publishing.publications["mavenJava"])
