@@ -66,9 +66,9 @@ jobs:
       # Step 4: Make gradlew executable
       - name: Import GPG private key
         uses: crazy-max/ghaction-import-gpg@v2
-        with:
-          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
-          passphrase: ${{ secrets.GPG_PASSWORD }}
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          PASSPHRASE: ${{ secrets.GPG_PASSWORD }}
 
       # Step 5: Build and Publish to GitHub Packages
       - name: Build and Publish to GitHub Packages
