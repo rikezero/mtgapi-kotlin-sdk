@@ -130,7 +130,9 @@ publishing {
             System.getenv("GPG_PRIVATE_KEY"),
             System.getenv("GPG_PASSWORD")
         )
-        sign(publishing.publications["mavenJava"])
+        if (project.hasProperty("publishToMavenCentral") && project.property("publishToMavenCentral") == "true") {
+            sign(publishing.publications["mavenJava"])
+        }
     }
 
     repositories {

@@ -63,87 +63,79 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      - name: Output environment variables for signing
-        run: |
-          echo "GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}"
-          echo "GH_USERNAME: ${{ secrets.GH_USERNAME }}"
-          echo "GH_TOKEN: ${{ secrets.GH_TOKEN }}"
-          echo "OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}"
-          echo "OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}"
+      # Step 4: Build and Publish to GitHub Packages
+      - name: Build and Publish to GitHub Packages
+        env:
+          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSWORD: ${{ secrets.GPG_PASSWORD }}
+          GH_USERNAME: ${{ secrets.GH_USERNAME }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: ./gradlew publish -Pversion=${{ needs.setup.outputs.version }} -PpublishToMavenCentral=false
 
-#      # Step 4: Build and Publish to GitHub Packages
-#      - name: Build and Publish to GitHub Packages
-#        env:
-#          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
-#          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-#          GPG_PASSWORD: ${{ secrets.GPG_PASSWORD }}
-#          GH_USERNAME: ${{ secrets.GH_USERNAME }}
-#          GH_TOKEN: ${{ secrets.GH_TOKEN }}
-#        run: ./gradlew publish -Pversion=${{ needs.setup.outputs.version }}
-#
-#      # Step 5: Publish to Maven Central
-#      - name: Publish to Maven Central
-#        env:
-#          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
-#          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-#          GPG_PASSWORD: ${{ secrets.GPG_PASSWORD }}
-#          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-#          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
-#        run: ./gradlew publishToMavenCentral -Pversion=${{ needs.setup.outputs.version }}
-#
-#      # Step 6: Upload .jar file as an artifact
-#      - name: Upload .jar as artifact
-#        uses: actions/upload-artifact@v3
-#        with:
-#          name: jar-file
-#          path: build/libs/MtgApi-kotlin-sdk-${{ needs.setup.outputs.version }}.jar
-#
-#  create-and-upload-release:
-#    needs: [setup, build]
-#    runs-on: ubuntu-22.04
-#
-#    steps:
-#      # Step 1: Check out the repository
-#      - name: Check out repository
-#        uses: actions/checkout@v4
-#
-#      # Step 2: Download the .jar artifact
-#      - name: Download .jar artifact
-#        uses: actions/download-artifact@v3
-#        with:
-#          name: jar-file
-#          path: ./artifact/
-#
-#      # Step 3: Create GitHub Release and Upload Asset
-#      - name: Create GitHub Release and Upload Asset
-#        uses: softprops/action-gh-release@v1
-#        with:
-#          tag_name: "v${{ needs.setup.outputs.version }}"
-#          name: "Release v${{ needs.setup.outputs.version }}"
-#          body: |
-#            ### Changelog
-#            - Published new version: `${{ needs.setup.outputs.version }}`
-#          draft: false
-#          prerelease: false
-#          files: ./artifact/MtgApi-kotlin-sdk-${{ needs.setup.outputs.version }}.jar
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#
-#  update-readme:
-#    needs: [setup, build]
-#    runs-on: ubuntu-22.04
-#
-#    steps:
-#      # Step 1: Check out the repository
-#      - name: Check out repository
-#        uses: actions/checkout@v4
-#
-#      # Step 2: Update README.md
-#      - name: Update README with version
-#        run: |
-#          sed -i "s/Current SDK version: .*/Current SDK version: v${{ needs.setup.outputs.version }}/" README.md
-#          git config --global user.name "GitHub Actions"
-#          git config --global user.email "actions@github.com"
-#          git add README.md
-#          git commit -m "Update README.md with version v${{ needs.setup.outputs.version }}."
-#          git push https://${{ secrets.GH_REPO_TOKEN }}@github.com/${{ github.repository }} HEAD:master
+      # Step 5: Publish to Maven Central
+      - name: Publish to Maven Central
+        env:
+          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSWORD: ${{ secrets.GPG_PASSWORD }}
+          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+        run: ./gradlew publishToMavenCentral -Pversion=${{ needs.setup.outputs.version }} -PpublishToMavenCentral=true
+
+      # Step 6: Upload .jar file as an artifact
+      - name: Upload .jar as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: jar-file
+          path: build/libs/MtgApi-kotlin-sdk-${{ needs.setup.outputs.version }}.jar
+
+  create-and-upload-release:
+    needs: [setup, build]
+    runs-on: ubuntu-22.04
+
+    steps:
+      # Step 1: Check out the repository
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      # Step 2: Download the .jar artifact
+      - name: Download .jar artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: jar-file
+          path: ./artifact/
+
+      # Step 3: Create GitHub Release and Upload Asset
+      - name: Create GitHub Release and Upload Asset
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: "v${{ needs.setup.outputs.version }}"
+          name: "Release v${{ needs.setup.outputs.version }}"
+          body: |
+            ### Changelog
+            - Published new version: `${{ needs.setup.outputs.version }}`
+          draft: false
+          prerelease: false
+          files: ./artifact/MtgApi-kotlin-sdk-${{ needs.setup.outputs.version }}.jar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  update-readme:
+    needs: [setup, build]
+    runs-on: ubuntu-22.04
+
+    steps:
+      # Step 1: Check out the repository
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      # Step 2: Update README.md
+      - name: Update README with version
+        run: |
+          sed -i "s/Current SDK version: .*/Current SDK version: v${{ needs.setup.outputs.version }}/" README.md
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add README.md
+          git commit -m "Update README.md with version v${{ needs.setup.outputs.version }}."
+          git push https://${{ secrets.GH_REPO_TOKEN }}@github.com/${{ github.repository }} HEAD:master
