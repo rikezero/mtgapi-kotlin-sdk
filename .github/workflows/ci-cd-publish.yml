@@ -8,6 +8,11 @@ on:
     branches:
       - master
   workflow_dispatch:
+    inputs:
+      trigger_publish:
+        description: 'Trigger publish'
+        required: true
+        default: 'yes'
 
 jobs:
   setup:
@@ -15,7 +20,8 @@ jobs:
 
     if: |
       contains(github.event.head_commit.message, '#publish') || 
-      (github.event_name == 'pull_request' && contains(github.event.pull_request.title, '#publish'))
+      (github.event_name == 'pull_request' && contains(github.event.pull_request.title, '#publish')) || 
+      ${{ github.event.inputs.trigger_publish == 'yes' }} 
 
     outputs:
       version: ${{ steps.set_version.outputs.version }}
