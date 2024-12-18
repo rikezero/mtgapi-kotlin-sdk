@@ -89,17 +89,6 @@ version = version // Dynamically set version
 
 val publishToMavenCentral = project.findProperty("publishToMavenCentral")?.toString()?.toBoolean() ?: false
 
-signing {
-    useInMemoryPgpKeys(
-        System.getenv("GPG_KEY_ID"),
-        System.getenv("GPG_PRIVATE_KEY"),
-        System.getenv("GPG_PASSWORD")
-    )
-    if (publishToMavenCentral) {
-        sign(publishing.publications["mavenJava"])
-    }
-}
-
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
@@ -133,6 +122,17 @@ publishing {
                     url.set("https://github.com/rikezero/mtgapi-kotlin-sdk")
                 }
             }
+        }
+    }
+
+    signing {
+        useInMemoryPgpKeys(
+            System.getenv("GPG_KEY_ID"),
+            System.getenv("GPG_PRIVATE_KEY"),
+            System.getenv("GPG_PASSWORD")
+        )
+        if (publishToMavenCentral) {
+            sign(publishing.publications["mavenJava"])
         }
     }
 
