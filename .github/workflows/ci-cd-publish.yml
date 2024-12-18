@@ -41,39 +41,32 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      # Step 4: Set up JDK
-      - name: Set up JDK
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
   build:
     needs: setup
     runs-on: ubuntu-22.04
-
-    outputs:
-      jar_path: build/libs/MtgApi-kotlin-sdk-${{ needs.setup.outputs.version }}.jar
 
     steps:
       # Step 1: Check out the repository
       - name: Check out repository
         uses: actions/checkout@v4
 
-      # Step 2: Make gradlew executable
+      # Step 2: Set up JDK
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # Step 3: Make gradlew executable
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      # Step 3: Build the project
-      - name: Build project
-        run: ./gradlew build
-
-      # Step 4: Upload .jar file as an artifact
+      # Step 5: Upload .jar file as an artifact
       - name: Upload .jar as artifact
         uses: actions/upload-artifact@v3
         with:
           name: jar-file
-          path: ${{ steps.build.outputs.jar_path }}
+          path: build/libs/MtgApi-kotlin-sdk-${{ needs.setup.outputs.version }}.jar
 
   publish-github:
     needs: build
