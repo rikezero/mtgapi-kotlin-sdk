@@ -95,7 +95,7 @@ signing {
         System.getenv("GPG_PRIVATE_KEY"),
         System.getenv("GPG_PASSWORD")
     )
-    if (project.hasProperty("publishToMavenCentral") && publishToMavenCentral) {
+    if (publishToMavenCentral) {
         sign(publishing.publications["mavenJava"])
     }
 }
