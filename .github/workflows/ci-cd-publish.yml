@@ -90,7 +90,18 @@ jobs:
           name: jar-file
           path: ./artifact/
 
-      # Step 3: Publish to GitHub Packages
+      # Step 3: Set up JDK
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # Step 4: Make gradlew executable
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      # Step 5: Publish to GitHub Packages
       - name: Publish to GitHub Packages
         env:
           GH_USERNAME: ${{ secrets.GH_USERNAME }}
@@ -113,7 +124,18 @@ jobs:
           name: jar-file
           path: ./artifact/
 
-      # Step 3: Publish to Maven Central
+      # Step 3: Set up JDK
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # Step 4: Make gradlew executable
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      # Step 5: Publish to Maven Central
       - name: Publish to Maven Central
         env:
           GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
