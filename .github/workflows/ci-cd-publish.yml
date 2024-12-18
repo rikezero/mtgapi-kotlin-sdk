@@ -71,7 +71,7 @@ jobs:
           GPG_PASSWORD: ${{ secrets.GPG_PASSWORD }}
           GH_USERNAME: ${{ secrets.GH_USERNAME }}
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-        run: ./gradlew publish -Pversion=${{ needs.setup.outputs.version }} -PpublishToMavenCentral=false
+        run: ./gradlew publishMavenJavaPublicationToGitHubPackagesRepository -Pversion=${{ needs.setup.outputs.version }} -PpublishToMavenCentral=false
 
       # Step 5: Publish to Maven Central
       - name: Publish to Maven Central
@@ -81,7 +81,7 @@ jobs:
           GPG_PASSWORD: ${{ secrets.GPG_PASSWORD }}
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
-        run: ./gradlew publishToMavenCentral -Pversion=${{ needs.setup.outputs.version }} -PpublishToMavenCentral=true
+        run: ./gradlew publishMavenJavaPublicationToMavenCentralRepository -Pversion=${{ needs.setup.outputs.version }} -PpublishToMavenCentral=true
 
       # Step 6: Upload .jar file as an artifact
       - name: Upload .jar as artifact
