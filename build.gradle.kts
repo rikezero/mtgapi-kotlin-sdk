@@ -77,7 +77,7 @@ val generateConfigFile = tasks.register("generateConfigFile") {
 
 sourceSets {
     named("main") {
-        kotlin.srcDirs(generateConfigFile.map { it.outputs.files.singleFile })
+        kotlin.srcDirs("src/main/kotlin", generateConfigFile.map { it.outputs.files.singleFile })
     }
 }
 
