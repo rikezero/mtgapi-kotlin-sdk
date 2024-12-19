@@ -5,15 +5,12 @@ plugins {
     id("signing")
     alias(mtgsdk.plugins.jetbrains.kotlin.jvm)
     alias(mtgsdk.plugins.mavenDeployer)
+    alias(mtgsdk.plugins.dokka)
     `maven-publish`
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
-}
-
 kotlin {
+    jvmToolchain(17)
     compilerOptions {
         jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
     }
@@ -87,9 +84,23 @@ sourceSets {
 // Metadata for the library
 group = "com.github.rikezero" // GitHub-based group ID
 
+val javadocs = tasks.register<Jar>("dokkaJavadocJar") {
+    dependsOn(tasks.dokkaJavadoc)
+    from(tasks.dokkaJavadoc.flatMap { it.outputDirectory })
+    archiveClassifier.set("javadoc")
+}
+
 deployer {
     verbose = true
-    components.add(components["java"])
+
+    content {
+        component {
+            fromKotlinTarget(kotlin.target)
+            kotlinSources()
+            docs(javadocs)
+        }
+    }
+
     projectInfo {
         name.set("MTG API Kotlin SDK")
         description.set("Unofficial Kotlin SDK for MagicTheGathering.io API")

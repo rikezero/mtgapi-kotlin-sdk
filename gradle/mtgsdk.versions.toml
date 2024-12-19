@@ -13,6 +13,8 @@ bouncycastle-bcpg = "1.70"
 
 # JReleaser
 mavenDeployer = "0.16.0"
+#Dokka
+dokka = "1.9.20"
 
 [libraries]
 # Kotlin
@@ -36,3 +38,5 @@ bouncycastle-bcpg = { group = "org.bouncycastle", name = "bcpg-jdk15on", version
 [plugins]
 jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 mavenDeployer = { id = "io.deepmedia.tools.deployer", version.ref = "mavenDeployer" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+
