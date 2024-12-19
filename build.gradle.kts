@@ -4,6 +4,7 @@ plugins {
     id("java-library")
     id("signing")
     alias(mtgsdk.plugins.jetbrains.kotlin.jvm)
+    alias(mtgsdk.plugins.mavenDeployer)
     `maven-publish`
 }
 
@@ -85,83 +86,51 @@ sourceSets {
 
 // Metadata for the library
 group = "com.github.rikezero" // GitHub-based group ID
-version = version // Dynamically set version
 
-val publishToMavenCentral = project.findProperty("publishToMavenCentral")?.toString()?.toBoolean() ?: false
-
-publishing {
-    publications {
-        create<MavenPublication>("mavenJava") {
-            from(components["java"]) // Include Java and Kotlin classes in the library
-
-            // Metadata for the publication
-            groupId = "com.github.rikezero"
-            artifactId = "mtgapi-kotlin-sdk"
-            version = version // Dynamic version
-
-            pom {
-                name.set("MTG API Kotlin SDK")
-                description.set("Unofficial Kotlin SDK for MagicTheGathering.io API")
-                url.set("https://github.com/rikezero/mtgapi-kotlin-sdk")
-                licenses {
-                    license {
-                        name.set("MIT License")
-                        url.set("https://opensource.org/licenses/MIT")
-                    }
-                }
-                developers {
-                    developer {
-                        id.set("rikezero")
-                        name.set("RikeZero")
-                        email.set("rikezero@egmail.com")
-                    }
-                }
-                scm {
-                    connection.set("scm:git:git://github.com/rikezero/mtgapi-kotlin-sdk.git")
-                    developerConnection.set("scm:git:ssh://github.com/rikezero/mtgapi-kotlin-sdk.git")
-                    url.set("https://github.com/rikezero/mtgapi-kotlin-sdk")
-                }
-            }
+deployer {
+    verbose = true
+    components.add(components["java"])
+    projectInfo {
+        name.set("MTG API Kotlin SDK")
+        description.set("Unofficial Kotlin SDK for MagicTheGathering.io API")
+        url.set("https://github.com/rikezero/mtgapi-kotlin-sdk")
+        license(MIT)
+        developer {
+            name.set("rikezero")
+            organization.set("RikeZero")
+            email.set("rikezero@egmail.com")
+            url.set("https://github.com/rikezero/")
+        }
+        groupId.set("com.github.rikezero")
+        artifactId.set("mtgapi-kotlin-sdk")
+        scm {
+            connection.set("scm:git:git://github.com/rikezero/mtgapi-kotlin-sdk.git")
+            developerConnection.set("scm:git:ssh://github.com/rikezero/mtgapi-kotlin-sdk.git")
+            url.set("https://github.com/rikezero/mtgapi-kotlin-sdk")
         }
     }
 
-    signing {
-        useInMemoryPgpKeys(
-            /* defaultKeyId = */ System.getenv("GPG_KEY_IDD"),
-            /* defaultSecretKey = */ System.getenv("GPG_PRIVATE_KEY"),
-            /* defaultPassword = */ System.getenv("GPG_PASSWORD")
-        )
-        if (publishToMavenCentral) {
-            sign(publishing.publications["mavenJava"])
+    localSpec {
+        //Left empty
+    }
+
+    githubSpec {
+        owner.set("rikezero")
+        repository.set("mtgapi-kotlin-sdk")
+        auth {
+            user.set(secret("GH_USERNAME"))
+            token.set(secret("GH_TOKEN"))
         }
     }
 
-    repositories {
-        if (publishToMavenCentral){
-            // Maven Central
-            maven {
-                name = "MavenCentral"
-                url = uri(
-                    if (version.toString().endsWith("SNAPSHOT"))
-                        "https://s01.oss.sonatype.org/content/repositories/snapshots/"
-                    else
-                        "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-                )
-                credentials {
-                    username = System.getenv("OSSRH_USERNAME") // Sonatype username
-                    password = System.getenv("OSSRH_PASSWORD") // Sonatype password
-                }
-            }
-        } else {
-            // Github Packages
-            maven {
-                name = "GitHubPackages"
-                url = uri("https://maven.pkg.github.com/rikezero/mtgapi-kotlin-sdk")
-                credentials {
-                    username = System.getenv("GH_USERNAME") // GitHub username
-                    password = System.getenv("GH_TOKEN") // GitHub personal access token
-                }
-            }
+    centralPortalSpec {
+        auth {
+            user.set(secret("OSSRH_USERNAME"))
+            password.set(secret("OSSRH_PASSWORD"))
+        }
+        signing {
+            key.set(secret("GPG_PRIVATE_KEY"))
+            password.set(secret("GPG_PASSWORD"))
         }
     }
 }

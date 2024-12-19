@@ -63,19 +63,12 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      # Step 4: Make gradlew executable
-      - name: Import GPG private key
-        uses: crazy-max/ghaction-import-gpg@v2
-        env:
-          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-          PASSPHRASE: ${{ secrets.GPG_PASSWORD }}
-
       # Step 5: Build and Publish to GitHub Packages
       - name: Build and Publish to GitHub Packages
         env:
           GH_USERNAME: ${{ secrets.GH_USERNAME }}
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-        run: ./gradlew publishMavenJavaPublicationToGitHubPackagesRepository -Pversion=${{ needs.setup.outputs.version }} -PpublishToMavenCentral=false
+        run: ./gradlew deployGithub -Pversion=${{ needs.setup.outputs.version }}
 
       # Step 6: Publish to Maven Central
       - name: Publish to Maven Central
@@ -85,7 +78,7 @@ jobs:
           GPG_PASSWORD: ${{ secrets.GPG_PASSWORD }}
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
-        run: ./gradlew publishMavenJavaPublicationToMavenCentralRepository -Pversion=${{ needs.setup.outputs.version }} -PpublishToMavenCentral=true
+        run: ./gradlew deployCentralPortal -Pversion=${{ needs.setup.outputs.version }}
 
       # Step 7: Upload .jar file as an artifact
       - name: Upload .jar as artifact

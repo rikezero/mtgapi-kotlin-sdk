@@ -11,6 +11,9 @@ okhttp3 = "4.11.0"
 # Signing
 bouncycastle-bcpg = "1.70"
 
+# JReleaser
+mavenDeployer = "0.16.0"
+
 [libraries]
 # Kotlin
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
@@ -32,3 +35,4 @@ bouncycastle-bcpg = { group = "org.bouncycastle", name = "bcpg-jdk15on", version
 
 [plugins]
 jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+mavenDeployer = { id = "io.deepmedia.tools.deployer", version.ref = "mavenDeployer" }
