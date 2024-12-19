@@ -124,6 +124,7 @@ deployer {
     }
 
     centralPortalSpec {
+        allowMavenCentralSync = false
         auth {
             user.set(secret("OSSRH_USERNAME"))
             password.set(secret("OSSRH_PASSWORD"))
