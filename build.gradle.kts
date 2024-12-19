@@ -124,7 +124,7 @@ deployer {
     }
 
     centralPortalSpec {
-        allowMavenCentralSync = false
+        projectInfo.groupId.set("io.github.rikezero")
         auth {
             user.set(secret("OSSRH_USERNAME"))
             password.set(secret("OSSRH_PASSWORD"))
