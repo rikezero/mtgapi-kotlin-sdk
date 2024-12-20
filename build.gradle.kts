@@ -86,7 +86,7 @@ val javadocs = tasks.register<Jar>("dokkaJavadocJar") {
 publishing {
     publications {
         create<MavenPublication>("mtgapi-maven") {
-            from(components["kotlin"])
+            from(components["java"])
             groupId = group.toString()
             artifactId = "mtgapi-kotlin-sdk"
             version = project.version.toString()
@@ -99,7 +99,7 @@ deployer {
 
     content {
         component {
-            fromKotlinTarget(kotlin.target)
+            fromMavenPublication("mtgapi-maven", clone = false)
             kotlinSources()
             docs(javadocs)
         }
@@ -153,9 +153,9 @@ deployer {
 
 kotlin {
     jvmToolchain(17)
-    /*compilerOptions {
+    compilerOptions {
         jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
-    }*/
+    }
 }
 
 // Task to update the version.properties file after a successful build
