@@ -78,7 +78,7 @@ You can use GitHub Packages to easily install the SDK into your project using Gr
 
    ```gradle
    dependencies {
-      implementation 'com.github.rikezero:mtgapi-kotlin-sdk:v1.0.0.71'
+      implementation("io.github.rikezero:mtgapi-kotlin-sdk:1.0.0.71")
    }
    ```
 
