@@ -77,19 +77,34 @@ sourceSets {
 // Metadata for the library
 group = "com.github.rikezero" // GitHub-based group ID
 
-val javadocs = tasks.register<Jar>("dokkaJavadocJar") {
-    dependsOn(tasks.dokkaJavadoc)
-    from(tasks.dokkaJavadoc.flatMap { it.outputDirectory })
-    archiveClassifier.set("javadoc")
+
+tasks {
+    val javadocs by register<Jar>("dokkaJavadocJar") {
+        dependsOn(dokkaJavadoc)
+        from(dokkaJavadoc.flatMap { it.outputDirectory })
+        archiveClassifier.set("javadoc")
+    }
+
+    val sourcesJar by creating(Jar::class) {
+        from(sourceSets["main"].allSource)
+        archiveClassifier.set("sources")
+    }
 }
 
 publishing {
     publications {
         create<MavenPublication>("mtgapi-maven") {
-            //from(components["java"])
+            from(components["java"])
             groupId = group.toString()
             artifactId = "mtgapi-kotlin-sdk"
             version = project.version.toString()
+
+            artifact(tasks["sourcesJar"]) {
+                classifier = "sources"
+            }
+            artifact(tasks["dokkaJavadocJar"]) {
+                classifier = "javadoc"
+            }
         }
     }
 }
@@ -100,8 +115,8 @@ deployer {
     content {
         component {
             fromMavenPublication("mtgapi-maven", clone = false)
-            kotlinSources()
-            docs(javadocs)
+            //kotlinSources()
+            //docs(javadocs)
         }
     }
 
