@@ -9,13 +9,6 @@ plugins {
     `maven-publish`
 }
 
-kotlin {
-    jvmToolchain(17)
-    compilerOptions {
-        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
-    }
-}
-
 // Load version from version.properties
 val versionFile = file("version.properties")
 val versionProps = Properties()
@@ -77,7 +70,7 @@ val generateConfigFile = tasks.register("generateConfigFile") {
 
 sourceSets {
     named("main") {
-        kotlin.srcDirs("src/main/kotlin", generateConfigFile.map { it.outputs.files.singleFile })
+        kotlin.srcDirs(generateConfigFile.map { it.outputs.files.singleFile })
     }
 }
 
@@ -88,6 +81,17 @@ val javadocs = tasks.register<Jar>("dokkaJavadocJar") {
     dependsOn(tasks.dokkaJavadoc)
     from(tasks.dokkaJavadoc.flatMap { it.outputDirectory })
     archiveClassifier.set("javadoc")
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("mtgapi-maven") {
+            from(components["java"])
+            groupId = group.toString()
+            artifactId = "mtgapi-kotlin-sdk"
+            version = project.version.toString()
+        }
+    }
 }
 
 deployer {
@@ -145,6 +149,13 @@ deployer {
             password.set(secret("GPG_PASSWORD"))
         }
     }
+}
+
+kotlin {
+    jvmToolchain(17)
+    /*compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
+    }*/
 }
 
 // Task to update the version.properties file after a successful build
