@@ -48,11 +48,11 @@ You can use GitHub Packages to easily install the SDK into your project using Gr
 
     ```gradle
     dependencies {
-        implementation 'com.rikezero:mtgapi-kotlin-sdk:v1.0.0.25'
+        implementation 'com.rikezero:mtgapi-kotlin-sdk:v1.0.0.71'
     }
     ```
 
-   Make sure to replace `v1.0.0.25` with the appropriate version number as needed.
+   Make sure to replace `v1.0.0.71` with the appropriate version number as needed.
 
 3. To authenticate to GitHub Packages, create a personal access token on GitHub with the appropriate permissions 
 4. and set the `gpr.user` and `gpr.token` properties in your project (or environment variables).
@@ -78,11 +78,11 @@ You can use GitHub Packages to easily install the SDK into your project using Gr
 
    ```gradle
    dependencies {
-      implementation 'com.rikezero:mtgapi-kotlin-sdk:v1.0.0.25'
+      implementation 'com.rikezero:mtgapi-kotlin-sdk:v1.0.0.71'
    }
    ```
 
-Make sure to replace `v1.0.0.25` with the appropriate version number as needed.
+Make sure to replace `v1.0.0.71` with the appropriate version number as needed.
 
 ### Option 3: Manual Installation
 
@@ -95,11 +95,11 @@ If you prefer not to use GitHub Packages, you can manually download the `.jar` f
 
     ```gradle
     dependencies {
-        implementation files('libs/mtgapi-kotlin-sdk-v1.0.0.25.jar')
+        implementation files('libs/mtgapi-kotlin-sdk-v1.0.0.71.jar')
     }
     ```
 
-Make sure to replace `mtgapi-kotlin-sdk-v1.0.0.25.jar` with the actual filename of the `.jar` file you downloaded.
+Make sure to replace `mtgapi-kotlin-sdk-v1.0.0.71.jar` with the actual filename of the `.jar` file you downloaded.
 
 ## Initializing the Library in Koin
 
