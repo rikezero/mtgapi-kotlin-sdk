@@ -23,8 +23,8 @@ Current SDK version: v1.0.0.40
 
 ## Installation
 
-There are two methods you can choose from to install the MTG API Kotlin SDK into your project: via 
-GitHub Packages (recommended) or by manually downloading the `.jar` file.
+There are three methods you can choose from to install the MTG API Kotlin SDK into your project: via 
+GitHub Packages or Maven Central (recommended) or by manually downloading the `.jar` file.
 
 ### Option 1: GitHub Packages (Recommended)
 
@@ -44,7 +44,7 @@ You can use GitHub Packages to easily install the SDK into your project using Gr
     }
     ```
 
-2. Add the dependency for the SDK:
+3. Add the dependency for the SDK:
 
     ```gradle
     dependencies {
@@ -60,7 +60,31 @@ You can use GitHub Packages to easily install the SDK into your project using Gr
 For more information about working with GitHub Packages, check out the 
 official [GitHub Packages documentation](https://docs.github.com/pt/packages/working-with-a-github-packages-registry/working-with-the-gradle-registry).
 
-### Option 2: Manual Installation
+### Option 2: Maven Central (Recommended)
+
+You can use GitHub Packages to easily install the SDK into your project using Gradle. Follow the instructions below:
+
+1. Add the Maven Central repository to your `settings.gradle.kts` file:
+
+   ```gradle
+   pluginManagement {
+      repositories {        
+        mavenCentral()        
+      }    
+   }
+   ```
+
+2. Add the dependency for the SDK to your `build.gradle.kts`:
+
+   ```gradle
+   dependencies {
+      implementation 'com.rikezero:mtgapi-kotlin-sdk:v1.0.0.25'
+   }
+   ```
+
+Make sure to replace `v1.0.0.25` with the appropriate version number as needed.
+
+### Option 3: Manual Installation
 
 If you prefer not to use GitHub Packages, you can manually download the `.jar` file from the releases page of this repository.
 
