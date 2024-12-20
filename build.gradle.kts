@@ -86,7 +86,7 @@ val javadocs = tasks.register<Jar>("dokkaJavadocJar") {
 publishing {
     publications {
         create<MavenPublication>("mtgapi-maven") {
-            from(components["java"])
+            //from(components["java"])
             groupId = group.toString()
             artifactId = "mtgapi-kotlin-sdk"
             version = project.version.toString()
