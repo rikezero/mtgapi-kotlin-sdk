@@ -1,7 +1,9 @@
 import com.google.gson.annotations.SerializedName
 import com.rikezero.mtgapi_kotlin_sdk.networking.response.card.ForeignNameResponse
 import com.rikezero.mtgapi_kotlin_sdk.networking.response.card.RulingResponse
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class CardResponse(
     @SerializedName("name") val name: String?,
     @SerializedName("manaCost") val manaCost: String?,

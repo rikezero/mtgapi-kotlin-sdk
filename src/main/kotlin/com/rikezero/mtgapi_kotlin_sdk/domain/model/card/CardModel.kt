@@ -1,5 +1,8 @@
 package com.rikezero.mtgapi_kotlin_sdk.domain.model.card
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class CardModel(
     val name: String?,
     val manaCost: String?,
