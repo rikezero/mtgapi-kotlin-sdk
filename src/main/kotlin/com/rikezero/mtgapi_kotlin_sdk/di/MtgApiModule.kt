@@ -52,9 +52,9 @@ private val mtgApiUseCaseModules = module {
 }
 
 private val mtgApiLibraryModules = listOf(
-    mtgApiUseCaseModules,
+    mtgApiNetworkingModules,
     mtgApiRepositoryModules,
-    mtgApiNetworkingModules
+    mtgApiUseCaseModules
 )
 
 /**
@@ -78,10 +78,11 @@ private val mtgApiLibraryModules = listOf(
  *         // Initialize Koin when the app starts
  *         startKoin {
  *             androidContext(this@MyApplication)
- *             modules(initialModules)  // This could be your global/default modules
+ *             modules(initialModules)  // This could be your global/default modules that don't depend on this library
  *         } *
  *         // Now, load the MTG API library modules dynamically
  *         startMtgApiLibrary()
+ *         loadYourModulesThatDependOnMtgApiLibrary()
  *     }
  * }
  * ```

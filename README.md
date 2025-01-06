@@ -132,11 +132,13 @@ Once you have successfully installed the library, you can initialize it in your 
     fun main() {
         // Initialize Koin with global/default modules
         startKoin {
-            modules(initialModules)  // Define the modules you want to use globally
+            modules(initialModules)  // Define the modules you want to use globally and don't rely on this lib
         }
 
         // Dynamically load the MTG API library modules
         startMtgApiLibrary()  // Ensure to call this after Koin initialization
+        loadModulesThatRelyOnThisLib() //to prevent problems with dependency injection you should load your modules 
+        // after you've started MTG API Library
     }
     ```
 

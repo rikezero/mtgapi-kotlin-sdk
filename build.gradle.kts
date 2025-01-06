@@ -6,6 +6,7 @@ plugins {
     alias(mtgsdk.plugins.jetbrains.kotlin.jvm)
     alias(mtgsdk.plugins.mavenDeployer)
     alias(mtgsdk.plugins.dokka)
+    alias(mtgsdk.plugins.kotlinx.serialization)
     `maven-publish`
 }
 
@@ -36,6 +37,7 @@ dependencies {
     implementation(mtgsdk.kotlin.stdlib)
     implementation(mtgsdk.koin.core)
     implementation(mtgsdk.kotlin.reflect)
+    implementation(mtgsdk.kotlinx.serialization)
     // Signing
     implementation(mtgsdk.bouncycastle.bcpg)
 }
