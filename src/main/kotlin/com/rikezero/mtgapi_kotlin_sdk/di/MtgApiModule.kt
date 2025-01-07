@@ -31,7 +31,7 @@ private val mtgApiNetworkingModules = module {
             interceptors = listOf()
         )
     }
-    single<MtgApiNetworkEngine> { MtgApiNetworkEngineImpl(retrofit = get()) }
+    single<MtgApiNetworkEngine> { MtgApiNetworkEngineImpl(retrofit = get(named(NAME_RETROFIT_MTG))) }
     single<MtgApiNetworkAdapter> { MtgApiNetworkAdapterImpl(networkEngine = get()) }
     single<MtgApiNetworking> { MtgApiNetworkingImpl(networkAdapter = get()) }
 }
