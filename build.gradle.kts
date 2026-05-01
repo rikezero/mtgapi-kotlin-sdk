@@ -183,11 +183,74 @@ tasks.register("updateVersionFile") {
     }
 }
 
-// Run sample task
+// Run sample tasks
 tasks.register<JavaExec>("runCardListSample") {
     description = "Runs the Card List Sample app"
     group = "verification"
-    
     classpath = sourceSets["main"].runtimeClasspath
     mainClass = "com.rikezero.mtgapi_kotlin_sdk.samples.CardListSampleKt"
+}
+
+tasks.register<JavaExec>("runCardByIdSample") {
+    description = "Runs the Card By ID Sample app"
+    group = "verification"
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass = "com.rikezero.mtgapi_kotlin_sdk.samples.CardByIdSampleKt"
+}
+
+tasks.register<JavaExec>("runCardSetsSample") {
+    description = "Runs the Card Sets Sample app"
+    group = "verification"
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass = "com.rikezero.mtgapi_kotlin_sdk.samples.CardSetsSampleKt"
+}
+
+tasks.register<JavaExec>("runCardSetByCodeSample") {
+    description = "Runs the Card Set By Code Sample app"
+    group = "verification"
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass = "com.rikezero.mtgapi_kotlin_sdk.samples.CardSetByCodeSampleKt"
+}
+
+tasks.register<JavaExec>("runTypesSample") {
+    description = "Runs the Types Sample app"
+    group = "verification"
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass = "com.rikezero.mtgapi_kotlin_sdk.samples.TypesSampleKt"
+}
+
+tasks.register<JavaExec>("runSubtypesSample") {
+    description = "Runs the Subtypes Sample app"
+    group = "verification"
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass = "com.rikezero.mtgapi_kotlin_sdk.samples.SubtypesSampleKt"
+}
+
+tasks.register<JavaExec>("runSupertypesSample") {
+    description = "Runs the Supertypes Sample app"
+    group = "verification"
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass = "com.rikezero.mtgapi_kotlin_sdk.samples.SupertypesSampleKt"
+}
+
+tasks.register<JavaExec>("runFormatsSample") {
+    description = "Runs the Formats Sample app"
+    group = "verification"
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass = "com.rikezero.mtgapi_kotlin_sdk.samples.FormatsSampleKt"
+}
+
+tasks.register("runAllSamples") {
+    description = "Runs all integration sample apps"
+    group = "verification"
+    dependsOn(
+        "runCardListSample",
+        "runCardByIdSample",
+        "runCardSetsSample",
+        "runCardSetByCodeSample",
+        "runTypesSample",
+        "runSubtypesSample",
+        "runSupertypesSample",
+        "runFormatsSample"
+    )
 }
