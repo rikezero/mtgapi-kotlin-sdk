@@ -144,3 +144,67 @@ Once you have successfully installed the library, you can initialize it in your 
 
 In both cases, ensure that `startMtgApiLibrary()` is called **after** initializing Koin (`startKoin()`), 
 but **before** using any services or features provided by the MTG API library.
+
+## Integration Samples
+
+The SDK includes standalone sample apps for every API endpoint. Each sample initializes dependencies manually (no host app required) and hits the real MagicTheGathering.io API, making them useful for quick endpoint validation.
+
+### Available Samples
+
+| Gradle Task | Sample | Endpoint |
+|---|---|---|
+| `runCardListSample` | Card List | `GET /v1/cards` |
+| `runCardByIdSample` | Card By ID | `GET /v1/cards/{id}` |
+| `runCardSetsSample` | Card Sets | `GET /v1/sets` |
+| `runCardSetByCodeSample` | Card Set By Code | `GET /v1/sets/{code}` |
+| `runTypesSample` | Types | `GET /v1/types` |
+| `runSubtypesSample` | Subtypes | `GET /v1/subtypes` |
+| `runSupertypesSample` | Supertypes | `GET /v1/supertypes` |
+| `runFormatsSample` | Formats | `GET /v1/formats` |
+
+### Running a Single Sample
+
+```bash
+./gradlew runCardListSample
+./gradlew runCardByIdSample
+./gradlew runCardSetsSample
+./gradlew runCardSetByCodeSample
+./gradlew runTypesSample
+./gradlew runSubtypesSample
+./gradlew runSupertypesSample
+./gradlew runFormatsSample
+```
+
+### Running All Samples
+
+```bash
+./gradlew runAllSamples
+```
+
+### Sample Structure
+
+Each sample follows the same pattern:
+
+```kotlin
+fun main() = runBlocking {
+    // 1. Build dependencies manually — no host app or Koin needed
+    val networking = setupNetworking()
+    val repository = MtgApiRepositoryImpl(networking)
+    val useCase = GetXxxUseCase(repository)
+
+    // 2. Call the use case
+    val result = useCase(params)
+
+    // 3. Handle result
+    if (result.isSuccess) {
+        println(result.getOrNull())
+    } else {
+        println("Error: ${result.exceptionOrNull()?.message}")
+    }
+}
+```
+
+Sample files are located in:
+```
+src/main/kotlin/com/rikezero/mtgapi_kotlin_sdk/samples/
+```
