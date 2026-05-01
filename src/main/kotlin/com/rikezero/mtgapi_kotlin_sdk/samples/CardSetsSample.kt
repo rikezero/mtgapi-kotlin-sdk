@@ -2,8 +2,6 @@ package com.rikezero.mtgapi_kotlin_sdk.samples
 
 import com.rikezero.mtgapi_kotlin_sdk.config.BuildConfig
 import com.rikezero.mtgapi_kotlin_sdk.domain.repository.impl.MtgApiRepositoryImpl
-import com.rikezero.mtgapi_kotlin_sdk.domain.usecase.GetSetsUseCase
-import com.rikezero.mtgapi_kotlin_sdk.domain.usecase.GetSetsUseCase.SetParameters
 import com.rikezero.mtgapi_kotlin_sdk.networking.MtgApiNetworking
 import com.rikezero.mtgapi_kotlin_sdk.networking.engine.impl.MtgApiNetworkEngineImpl
 import com.rikezero.mtgapi_kotlin_sdk.networking.engine.retrofit.buildMtgApiRetrofit
@@ -24,10 +22,12 @@ fun main() = runBlocking {
     try {
         val networking = setupNetworkingForCardSets()
         val repository = MtgApiRepositoryImpl(networking)
-        val useCase = GetSetsUseCase(repository)
+
+        // Note: GetSetsUseCase.SetParameters.toHashMap() has a reflection bug with data class copy().
+        // Calling repository directly with explicit hashmaps as a workaround.
 
         println("=== Example 1: All Sets (first 5) ===")
-        val result1 = useCase(SetParameters())
+        val result1 = repository.getSets(hashMapOf())
         if (result1.isSuccess) {
             val data = result1.getOrNull()
             if (data != null) {
@@ -46,7 +46,7 @@ fun main() = runBlocking {
         }
 
         println("\n=== Example 2: Filter by name 'Modern' ===")
-        val result2 = useCase(SetParameters(name = "Modern"))
+        val result2 = repository.getSets(hashMapOf("name" to "Modern"))
         if (result2.isSuccess) {
             val data = result2.getOrNull()
             if (data != null) {
@@ -62,7 +62,7 @@ fun main() = runBlocking {
         }
 
         println("\n=== Example 3: Filter by block 'Ixalan' ===")
-        val result3 = useCase(SetParameters(block = "Ixalan"))
+        val result3 = repository.getSets(hashMapOf("block" to "Ixalan"))
         if (result3.isSuccess) {
             val data = result3.getOrNull()
             if (data != null) {
