@@ -182,3 +182,12 @@ tasks.register("updateVersionFile") {
         versionProps.store(versionFile.outputStream(), "Version updated after build")
     }
 }
+
+// Run sample task
+tasks.register<JavaExec>("runCardListSample") {
+    description = "Runs the Card List Sample app"
+    group = "verification"
+    
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass = "com.rikezero.mtgapi_kotlin_sdk.samples.CardListSampleKt"
+}

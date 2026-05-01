@@ -42,12 +42,12 @@ class MtgApiNetworkEngineImpl(
             val responseString = responseBody.string()
             val gsonInstance = if (deserializer != null) {
                 GsonBuilder()
-                    .registerTypeAdapter(responseClass::class.java, deserializer)
+                    .registerTypeAdapter(responseClass.java, deserializer)
                     .create()
             } else {
                 MtgApiDeserializer.getGson(responseClass)
             }
-            val parsedResponse = gsonInstance.fromJson<T>(responseString, responseClass::class.java)
+            val parsedResponse = gsonInstance.fromJson<T>(responseString, responseClass.java)
             MtgApiResponse.Success(parsedResponse)
         } catch (e: JsonSyntaxException) {
             MtgApiResponse.Error(e)
