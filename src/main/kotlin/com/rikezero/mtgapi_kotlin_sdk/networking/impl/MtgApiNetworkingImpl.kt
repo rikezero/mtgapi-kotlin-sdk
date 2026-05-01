@@ -5,9 +5,11 @@ import com.rikezero.mtgapi_kotlin_sdk.networking.MtgApiNetworking
 import com.rikezero.mtgapi_kotlin_sdk.networking.networkadapter.MtgApiNetworkAdapter
 import com.rikezero.mtgapi_kotlin_sdk.networking.response.FormatsResponse
 import com.rikezero.mtgapi_kotlin_sdk.networking.response.MtgApiResponse
+import com.rikezero.mtgapi_kotlin_sdk.networking.response.card.CardSingleResponse
 import com.rikezero.mtgapi_kotlin_sdk.networking.response.lists.CardListResponse
 import com.rikezero.mtgapi_kotlin_sdk.networking.response.lists.CardSetListResponse
 import com.rikezero.mtgapi_kotlin_sdk.networking.response.set.CardSetResponse
+import com.rikezero.mtgapi_kotlin_sdk.networking.response.set.CardSetSingleResponse
 import com.rikezero.mtgapi_kotlin_sdk.networking.response.types.SubtypesResponse
 import com.rikezero.mtgapi_kotlin_sdk.networking.response.types.SuperTypesResponse
 import com.rikezero.mtgapi_kotlin_sdk.networking.response.types.TypesResponse
@@ -34,10 +36,14 @@ class MtgApiNetworkingImpl(
     }
 
     override suspend fun getCardById(id: String): MtgApiResponse<CardResponse?> {
-        return networkAdapter.get(
+        val response = networkAdapter.get(
             url = "${CARDS_ENDPOINT}/${id}",
-            responseClass = CardResponse::class
+            responseClass = CardSingleResponse::class
         )
+        return when (response) {
+            is MtgApiResponse.Success -> MtgApiResponse.Success(response.data?.card)
+            is MtgApiResponse.Error -> response
+        }
     }
 
     override suspend fun getSets(queries: HashMap<String, String>): MtgApiResponse<CardSetListResponse?> {
@@ -49,10 +55,14 @@ class MtgApiNetworkingImpl(
     }
 
     override suspend fun getSetByCode(code: String): MtgApiResponse<CardSetResponse?> {
-        return networkAdapter.get(
+        val response = networkAdapter.get(
             url = "${SETS_ENDPOINT}/${code}",
-            responseClass = CardSetResponse::class
+            responseClass = CardSetSingleResponse::class
         )
+        return when (response) {
+            is MtgApiResponse.Success -> MtgApiResponse.Success(response.data?.set)
+            is MtgApiResponse.Error -> response
+        }
     }
 
     override suspend fun getTypes(): MtgApiResponse<TypesResponse?> {
