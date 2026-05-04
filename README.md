@@ -24,6 +24,10 @@ Full generated API reference (KDoc): **[Releases → API Docs](https://github.co
 
 > Once KDoc generation via Dokka is published (see [#32](https://github.com/rikezero/mtgapi-kotlin-sdk/issues/32)), this link will point to the hosted API reference.
 
+## Architecture
+
+Internal layer design, data flow diagrams, extension points, and the guide for adding new endpoints: **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**
+
 ## Version
 Current SDK version: v1.0.0.81
 
