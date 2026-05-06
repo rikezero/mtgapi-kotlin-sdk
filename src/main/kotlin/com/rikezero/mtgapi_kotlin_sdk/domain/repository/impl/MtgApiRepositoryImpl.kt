@@ -15,6 +15,13 @@ import com.rikezero.mtgapi_kotlin_sdk.domain.result.mapToNotNull
 import com.rikezero.mtgapi_kotlin_sdk.networking.MtgApiNetworking
 import com.rikezero.mtgapi_kotlin_sdk.util.response.result
 
+/**
+ * Default implementation of [MtgApiRepository].
+ *
+ * Fetches data through [MtgApiNetworking], maps each network response to its corresponding
+ * domain model via extension functions, and wraps the result in [MtgApiResult].
+ * Null network payloads are converted to [com.rikezero.mtgapi_kotlin_sdk.domain.failure.MtgApiFailure.UnknownFailure].
+ */
 class MtgApiRepositoryImpl(
     private val mtgApiNetworking: MtgApiNetworking
 ): MtgApiRepository {

@@ -6,6 +6,12 @@ import com.rikezero.mtgapi_kotlin_sdk.domain.result.MtgApiResult
 import com.rikezero.mtgapi_kotlin_sdk.domain.usecase.GetCardsUseCase.GetCardsParams
 import com.rikezero.mtgapi_kotlin_sdk.domain.usecase.base.MtgApiUseCase
 
+/**
+ * Use case for retrieving a list of Magic: The Gathering cards.
+ *
+ * Delegates to [MtgApiRepository.getCards] using the query parameters provided
+ * via [GetCardsParams]. Results are returned as [MtgApiResult] wrapping a [CardListModel].
+ */
 class  GetCardsUseCase(
     private val mtgApiRepository: MtgApiRepository
 ): MtgApiUseCase<GetCardsParams, CardListModel>() {
@@ -98,6 +104,12 @@ class  GetCardsUseCase(
         }
     }
 
+    /**
+     * Executes the use case by fetching a filtered list of cards from the repository.
+     *
+     * @param params The filtering and pagination parameters for the card query.
+     * @return [MtgApiResult] wrapping a [CardListModel] on success, or a failure on error.
+     */
     override suspend fun execute(params: GetCardsParams): MtgApiResult<CardListModel> {
         return mtgApiRepository.getCards(params.toHashMap())
     }
